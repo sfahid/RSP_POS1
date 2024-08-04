@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management</title>
+    {% load static %}
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="mb-4">Product Management</h1>
+    <button class="btn btn-primary mb-4" id="create-product-btn">Create New Product</button>
+    
+    <div id="product-list"></div>
+</div>
+
+<!-- Product Modal -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productModalLabel">Create Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="product-form">
+                    <div class="mb-3">
+                        <label for="product-name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="product-name" name="name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="product-description" class="form-label">Description</label>
+                        <textarea class="form-control" id="product-description" name="description"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="product-price" class="form-label">Price</label>
+                        <input type="number" step="0.01" class="form-control" id="product-price" name="price">
+                    </div>
+                    <div class="mb-3">
+                        <label for="product-stock" class="form-label">Stock</label>
+                        <input type="number" class="form-control" id="product-stock" name="stock">
+                    </div>
+                    <input type="hidden" id="product-id" name="id">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="save-product-btn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script>
+$(document).ready(function() {
+    const productModal = new bootstrap.Modal(document.getElementById('productModal'));
+    const csrfToken = '{{ csrf_token }}';
+
+    function fetchProducts() {
+        $.ajax({
+            url: '{% url "product_list_api" %}',
+            method: 'GET',
+            success: function(data) {
+                let productListHtml = '<table class="table"><thead><tr><th>Name</th><th>Description</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead><tbody>';
+                data.forEach(function(product) {
+                    productListHtml += `
+                        <tr>
+                            <td>${product.name}</td>
+                            <td>${product.description}</td>
+                            <td>${product.price}</td>
+                            <td>${product.stock}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary edit-product-btn" data-id="${product.id}">Edit</button>
+                                <button class="btn btn-sm btn-danger delete-product-btn" data-id="${product.id}">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                productListHtml += '</tbody></table>';
+                $('#product-list').html(productListHtml);
+            }
+        });
+    }
+
+    fetchProducts();
+
+    $('#create-product-btn').on('click', function() {
+        $('#productModalLabel').text('Create Product');
+        $('#product-form')[0].reset();
+        $('#product-id').val('');
+        productModal.show();
+    });
+
+    $('#save-product-btn').on('click', function() {
+        const productId = $('#product-id').val();
+        const url = productId ? `{% url "product_update_api" 0 %}`.replace('0', productId) : '{% url "product_create_api" %}';
+        const method = productId ? 'PUT' : 'POST';
+
+        $.ajax({
+            url: url,
+            method: method,
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            data: $('#product-form').serialize(),
+            success: function() {
+                productModal.hide();
+                fetchProducts();
+            }
+        });
+    });
+
+    $('#product-list').on('click', '.edit-product-btn', function() {
+        const productId = $(this).data('id');
+        $.ajax({
+            url: `{% url "product_detail_api" 0 %}`.replace('0', productId),
+            method: 'GET',
+            success: function(data) {
+                $('#productModalLabel').text('Edit Product');
+                $('#product-name').val(data.name);
+                $('#product-description').val(data.description);
+                $('#product-price').val(data.price);
+                $('#product-stock').val(data.stock);
+                $('#product-id').val(data.id);
+                productModal.show();
+            }
+        });
+    });
+
+    $('#product-list').on('click', '.delete-product-btn', function() {
+        const productId = $(this).data('id');
+        if (confirm('Are you sure you want to delete this product?')) {
+            $.ajax({
+                url: `{% url "product_delete_api" 0 %}`.replace('0', productId),
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                success: function() {
+                    fetchProducts();
+                }
+            });
+        }
+    });
+});
+</script>
+
+</body>
+</html>

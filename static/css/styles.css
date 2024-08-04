@@ -1,0 +1,11 @@
+   /* styles.css */
+
+/* Example: Style the table rows */
+#productTable tbody tr {
+    cursor: pointer;
+    
+}
+
+body {background-color: aqua;}
+/* Add more custom styles as needed */
+

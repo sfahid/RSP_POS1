@@ -1,0 +1,23 @@
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supplier List</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <h1>Supplier List</h1>
+    <a href="{% url 'supplier_create' %}">Create New Supplier</a>
+    <ul>
+        {% for supplier in suppliers %}
+        <li>
+            <a href="{% url 'supplier_detail' supplier.id %}">{{ supplier.name }}</a> -
+            <a href="{% url 'supplier_update' supplier.id %}">Edit</a> -
+            <a href="{% url 'supplier_delete' supplier.id %}">Delete</a>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

@@ -1,0 +1,71 @@
+{% extends 'base.html' %} 
+
+{% block title %}Products List{% endblock title %} 
+{% block headtag %}
+{% load static %}
+<script src="{% static 'js/update_scripts.js' %}"></script>
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+{% endblock headtag %}
+{% block body %}
+
+<div class="container">
+  <h1>Product List</h1>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Price</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for product in products %}
+      <tr>
+        <td>{{ product.id }}</td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.description }}</td>
+        <td>${{ product.price }}</td>
+        <td>
+          <a
+            href="{% url 'product_detail' product.id %}"
+            class="btn btn-primary"
+          >
+            <i class="bi bi-eye"></i> View
+          </a>
+          <a
+            href="{% url 'product_update' product.id %}"
+            class="btn btn-warning"
+          >
+            <i class="bi bi-pencil"></i> Edit
+          </a>
+          <a
+          href=""
+          class="btn btn-warning", id='edit-btn', name='edit-btn'
+        >
+          <i class="bi bi-pencil"></i> Edit Btn
+        </a>
+          <a
+            href="{% url 'product_delete' product.id %}"
+            class="btn btn-danger"
+          >
+            <i class="bi bi-trash"></i> Delete
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+
+
+
+{% load static %}
+<h1><link rel="text" href="{% static 'sample.txt' %}"></h1>
+
+
+{% endblock body %}

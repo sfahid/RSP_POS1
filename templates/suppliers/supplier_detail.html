@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supplier Detail</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <h1>{{ supplier.name }}</h1>
+    <p>Address: {{ supplier.address }}</p>
+    <p>City: {{ supplier.city }}</p>
+    <p>State: {{ supplier.state }}</p>
+    <p>Country: {{ supplier.country }}</p>
+    <p>Post Code: {{ supplier.post_code }}</p>
+    <p>Contact Number: {{ supplier.contact_number }}</p>
+    <p>Email: {{ supplier.email }}</p>
+    <a href="{% url 'supplier_update' supplier.id %}">Edit</a>
+    <a href="{% url 'supplier_list' %}">Back to List</a>
+</body>
+</html>
